@@ -1,3 +1,10 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&display=swap');
+
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 body {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
@@ -5,9 +12,84 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  background-color: white;
+  color: black;
 }
 
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
+}
+
+/* Dark mode */
+.dark body {
+  background-color: #1a202c; /* Dark background */
+  color: #e2e8f0; /* Light text */
+}
+
+/* Dark mode for specific components */
+.dark .bg-gradient-to-tr {
+  background: linear-gradient(to top right, #4a5568, #2d3748); /* Dark gradient */
+}
+
+.dark .text-white {
+  color: #e2e8f0; /* Light text */
+}
+
+.dark .bg-white {
+  background-color: #2d3748; /* Dark background for white elements */
+}
+
+.dark .border-palette-light {
+  border-color: #4a5568; /* Dark border */
+}
+
+/* Light Mode (Padrão) */
+body {
+  background-color: #ffffff;
+  color: #24292e;
+}
+
+/* Dark Mode */
+.dark body {
+  background-color: #0d1117;
+  color: #c9d1d9;
+}
+
+/* Estilos para o tema GitHub */
+.bg-github-dark {
+  background-color: #0d1117;
+}
+
+.bg-github-light {
+  background-color: #ffffff;
+}
+
+.text-github-dark {
+  color: #24292e;
+}
+
+.text-github-light {
+  color: #c9d1d9;
+}
+
+.border-github {
+  border-color: #30363d;
+}
+
+.hover\:bg-github-hover:hover {
+  background-color: #161b22;
+}
+
+/* Botões e Links */
+.bg-github-blue {
+  background-color: #58a6ff;
+}
+
+.text-github-blue {
+  color: #58a6ff;
+}
+
+.hover\:bg-github-blue:hover {
+  background-color: #388bfd;
 }
