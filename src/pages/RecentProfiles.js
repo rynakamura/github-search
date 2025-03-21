@@ -11,7 +11,7 @@ function RecentProfiles() {
 
   return (
     <main className="font-secondary flex flex-col items-center w-full max-w-lg mx-auto p-5">
-      <h1 className="font-primary font-extrabold text-github-light dark:text-github-dark text-3xl sm:text-4xl md:text-5xl md:leading-tight mt-8">
+      <h1 className="font-primary font-extrabold text-github-light dark:text-github-dark text-3xl sm:text-4xl md:text-5xl md:leading-tight ">
         Últimos Perfis Acessados
       </h1>
 
