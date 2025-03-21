@@ -1,34 +1,40 @@
-import { useEffect, useState } from 'react';
-import ProfileListItem from '../components/ProfileListItem';
-
+import { useEffect, useState } from "react";
+import ProfileList from '../components/ProfileList'; 
 function RecentProfiles() {
   const [recentProfiles, setRecentProfiles] = useState([]);
 
   useEffect(() => {
-    const savedProfiles = JSON.parse(localStorage.getItem('recentProfiles')) || [];
+    const savedProfiles =
+      JSON.parse(localStorage.getItem("recentProfiles")) || [];
     setRecentProfiles(savedProfiles);
   }, []);
 
   return (
-    <div className="font-secondary flex flex-col items-center w-full max-w-lg mx-auto">
+    <main className="font-secondary flex flex-col items-center w-full max-w-lg mx-auto p-5">
       <h1 className="font-primary font-extrabold text-github-light dark:text-github-dark text-3xl sm:text-4xl md:text-5xl md:leading-tight mt-8">
         Últimos Perfis Acessados
       </h1>
 
       {recentProfiles.length > 0 ? (
-        <ul className="w-full max-w-lg bg-github-light dark:bg-github-dark border border-github rounded-lg mt-2 overflow-hidden">
-          {recentProfiles.map((profile, index) => (
-            <ProfileListItem
-              key={index}
-              username={profile.username}
-              avatar_url={profile.avatar_url}
-            />
-          ))}
-        </ul>
+        <section aria-labelledby="recent-profiles-heading" className="w-full">
+          <h2 id="recent-profiles-heading" className="sr-only">
+            Lista de últimos perfis acessados
+          </h2>
+
+            {recentProfiles.length > 0 ? (
+              <ProfileList profiles={recentProfiles} />
+            ) : (
+              <p className="text-github-light dark:text-github-dark mt-4">
+                Nenhum resultado encontrado.
+              </p>
+            )}
+        </section>
       ) : (
-        <p className="text-github-light dark:text-github-dark mt-4">Nenhum perfil acessado recentemente.</p>
+        <p className="text-github-light dark:text-github-dark mt-4">
+          Nenhum perfil acessado recentemente.
+        </p>
       )}
-    </div>
+    </main>
   );
 }
 

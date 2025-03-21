@@ -1,20 +1,39 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
+import CustomSelect from '../components/CustomSelect'; 
 
 function ProfileDetails() {
   const { username } = useParams();
   const [userData, setUserData] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [sortBy, setSortBy] = useState('stars');
-  const [sortOrder, setSortOrder] = useState('desc');
+  const [sortBy, setSortBy] = useState(null);
+  const [sortOrder, setSortOrder] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 10; 
+  const itemsPerPage = 5;
+
+  const sortOptions = [
+    { name: 'Estrelas', value: 'stars' },
+    { name: 'Nome', value: 'name' },
+  ];
+
+  const orderOptions = [
+    { name: 'Decrescente', value: 'desc' },
+    { name: 'Crescente', value: 'asc' },
+  ];
 
   async function fetchUserData() {
     setLoading(true);
     setError(null);
-
+    const recentProfiles = getRecentProfiles()
+    const profile = recentProfiles.find(
+      (p) => p.login == username
+    );
+    if(profile != null){
+      setUserData({ ...profile, repos: profile.reposData });
+      setLoading(false);
+      return
+    }
     try {
       const userResponse = await fetch(`https://api.github.com/users/${username}`);
       if (!userResponse.ok) {
@@ -29,25 +48,26 @@ function ProfileDetails() {
       const reposData = await reposResponse.json();
 
       setUserData({ ...userData, repos: reposData });
-      saveRecentProfile(userData);
+      saveRecentProfile(userData, reposData);
     } catch (err) {
       setError(err.message);
     } finally {
       setLoading(false);
     }
   }
-
-  function saveRecentProfile(profile) {
-    const recentProfiles = JSON.parse(localStorage.getItem('recentProfiles')) || [];
-    const newProfile = { username: profile.login, avatar_url: profile.avatar_url };
-
+  function getRecentProfiles(){
+    return JSON.parse(localStorage.getItem("recentProfiles")) || [];
+  }
+  function saveRecentProfile(profile, reposData) {
+    const recentProfiles = getRecentProfiles()
+    profile.reposData = reposData
     const updatedProfiles = recentProfiles.filter(
-      (p) => p.username !== newProfile.username
+      (p) => p.login !== profile.login
     );
 
-    updatedProfiles.unshift(newProfile);
+    updatedProfiles.unshift(profile);
 
-    if (updatedProfiles.length > 10) {
+    if (updatedProfiles.length > 5) {
       updatedProfiles.pop();
     }
 
@@ -58,10 +78,12 @@ function ProfileDetails() {
     if (!userData?.repos) return [];
 
     return [...userData.repos].sort((a, b) => {
-      if (sortBy === 'stars') {
-        return sortOrder === 'desc' ? b.stargazers_count - a.stargazers_count : a.stargazers_count - b.stargazers_count;
-      } else if (sortBy === 'name') {
-        return sortOrder === 'desc'
+      if (sortBy?.value === 'stars') {
+        return sortOrder?.value === 'desc'
+          ? b.stargazers_count - a.stargazers_count
+          : a.stargazers_count - b.stargazers_count;
+      } else if (sortBy?.value === 'name') {
+        return sortOrder?.value === 'desc'
           ? b.name.localeCompare(a.name)
           : a.name.localeCompare(b.name);
       }
@@ -89,67 +111,68 @@ function ProfileDetails() {
   }
 
   return (
-    <div className="font-secondary flex flex-col items-center w-full max-w-lg mx-auto p-5 h-auto">
+    <main className="font-secondary flex flex-col items-center w-full max-w-lg mx-auto p-5 h-auto">
       {userData && (
-        <div className="space-y-8">
-          <h1 className="font-primary font-extrabold text-white text-3xl sm:text-4xl md:text-5xl md:leading-snug">
-            {userData.name || userData.login}
-          </h1>
-          <img
-            src={userData.avatar_url}
-            alt={`${userData.login}'s avatar`}
-            className="w-24 h-24 rounded-full mx-auto"
-          />
-          <p className="font-secondary text-palette-light text-base md:text-lg lg:text-xl">
-            {userData.bio || 'Sem descrição'}
-          </p>
-          <div className="flex justify-center space-x-4 text-gray-900">
-            <p>Seguidores: {userData.followers}</p>
-            <p>Seguindo: {userData.following}</p>
-          </div>
+        <article className="space-y-8">
+          <header className="text-center">
+            <h1 className="font-primary font-extrabold text-white text-3xl sm:text-4xl md:text-5xl md:leading-snug">
+              {userData.name || userData.login}
+            </h1>
+            <img
+              src={userData.avatar_url}
+              alt={`Avatar de ${userData.login}`}
+              className="w-24 h-24 rounded-full mx-auto"
+            />
+            <p className="font-secondary text-palette-light text-base md:text-lg lg:text-xl">
+              {userData.bio || 'Sem descrição'}
+            </p>
+            <div className="flex justify-center space-x-4 text-gray-900">
+              <p>Seguidores: {userData.followers}</p>
+              <p>Seguindo: {userData.following}</p>
+            </div>
+          </header>
 
-          <div className="flex space-x-4">
-            <select
-              value={sortBy}
-              onChange={(e) => setSortBy(e.target.value)}
-              className="p-2 border border-gray-300 rounded"
-            >
-              <option value="stars">Estrelas</option>
-              <option value="name">Nome</option>
-            </select>
-            <select
-              value={sortOrder}
-              onChange={(e) => setSortOrder(e.target.value)}
-              className="p-2 border border-gray-300 rounded"
-            >
-              <option value="desc">Decrescente</option>
-              <option value="asc">Crescente</option>
-            </select>
-          </div>
+          <section className="flex space-x-4">
+            <CustomSelect
+              options={sortOptions}
+              selectedOption={sortBy}
+              setSelectedOption={setSortBy}
+              label="Ordenar por"
+            />
+            <CustomSelect
+              options={orderOptions}
+              selectedOption={sortOrder}
+              setSelectedOption={setSortOrder}
+              label="Ordem"
+            />
+          </section>
 
-          <h2 className="font-primary font-extrabold text-white text-2xl sm:text-3xl md:text-4xl">
-            Repositórios
-          </h2>
-          <ul className="space-y-4">
-            {paginatedRepos().map((repo) => (
-              <li key={repo.id} className="text-palette-light">
-                <a
-                  href={repo.html_url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="hover:underline"
-                >
-                  {repo.name} ({repo.stargazers_count} ⭐)
-                </a>
-              </li>
-            ))}
-          </ul>
+          <section>
+            <h2 className="font-primary font-extrabold text-white text-2xl sm:text-3xl md:text-4xl">
+              Repositórios
+            </h2>
+            <ul className="space-y-4">
+              {paginatedRepos().map((repo) => (
+                <li key={repo.id} className="text-palette-light">
+                  <a
+                    href={repo.html_url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="hover:underline"
+                  >
+                    {repo.name} ({repo.stargazers_count} ⭐)
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </section>
 
-          <div className="flex justify-center space-x-4">
+          <footer className="flex justify-center space-x-4">
             <button
               onClick={() => setCurrentPage(currentPage - 1)}
               disabled={currentPage === 1}
               className="px-4 py-2 bg-github-blue text-white rounded-lg disabled:opacity-50"
+              aria-label="Página anterior"
             >
               Anterior
             </button>
@@ -160,13 +183,14 @@ function ProfileDetails() {
               onClick={() => setCurrentPage(currentPage + 1)}
               disabled={currentPage * itemsPerPage >= sortedRepos().length}
               className="px-4 py-2 bg-github-blue text-white rounded-lg disabled:opacity-50"
+              aria-label="Próxima página"
             >
               Próxima
             </button>
-          </div>
-        </div>
+          </footer>
+        </article>
       )}
-    </div>
+    </main>
   );
 }
 
