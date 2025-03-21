@@ -38,7 +38,7 @@ function SearchResults() {
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
   return (
-    <div className="font-secondary flex flex-col items-center w-full max-w-lg mx-auto">
+    <div className="font-secondary flex flex-col items-center w-full h-full  max-w-lg mx-auto px-5">
       <h1 className="font-primary font-extrabold text-github-light dark:text-github-dark text-3xl sm:text-4xl md:text-5xl md:leading-tight mt-8">
         Resultados para: {username}
       </h1>
