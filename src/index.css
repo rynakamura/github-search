@@ -99,3 +99,7 @@ body {
 .hover\:bg-github-blue:hover {
   background-color: #388bfd;
 }
+
+.grid-custom {
+  grid-template-rows: 2fr 1fr;
+}

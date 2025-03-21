@@ -5,8 +5,8 @@ function Home() {
   const navigate = useNavigate();
 
   return (
-    <div className=" inset-0 flex flex-col justify-center items-center w-5/6 max-w-lg mx-auto text-center h-full">
-      <div className="space-y-8">
+    <div className=" inset-0 grid grid-rows-5 w-5/6 max-w-lg mx-auto text-center h-full">
+      <div className="space-y-8 row-start-2">
         <h1 className="font-primary font-extrabold text-white text-3xl sm:text-4xl md:text-5xl md:leading-tight">
           GH <span className="text-palette-primary">Search</span>
         </h1>
