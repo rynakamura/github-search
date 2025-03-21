@@ -14,7 +14,7 @@ function ProfileList({ profiles }) {
   };
 
   return (
-    <div className="w-full px-4 py-16">
+    <div className="w-full px-4 py-10">
       <div className="mx-auto w-full max-w-md">
         <div role="list" className="space-y-2">
           {profiles.map((profile) => (
