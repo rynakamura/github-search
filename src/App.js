@@ -5,6 +5,7 @@ import SearchResults from "./pages/SearchResults";
 import ProfileDetails from "./pages/ProfileDetails";
 import RecentProfiles from "./pages/RecentProfiles";
 import Header from "./components/Header";
+import ConnectionModal from "./components/Modal";
 
 function App() {
   const [darkMode, setDarkMode] = useState(() => {
@@ -12,9 +13,30 @@ function App() {
     return savedDarkMode ? JSON.parse(savedDarkMode) : false;
   });
 
+  const [isOnline, setIsOnline] = useState(navigator.onLine);
+  const [isModalOpen, setIsModalOpen] = useState(false); 
   useEffect(() => {
     localStorage.setItem("darkMode", JSON.stringify(darkMode));
   }, [darkMode]);
+
+  useEffect(() => {
+    const handleOnline = () => {
+      setIsOnline(true);
+      setIsModalOpen(false);
+    };
+    const handleOffline = () => {
+      setIsOnline(false);
+      setIsModalOpen(true);
+    };
+
+    window.addEventListener("online", handleOnline);
+    window.addEventListener("offline", handleOffline);
+
+    return () => {
+      window.removeEventListener("online", handleOnline);
+      window.removeEventListener("offline", handleOffline);
+    };
+  }, []);
 
   const toggleDarkMode = () => {
     setDarkMode(!darkMode);
@@ -32,6 +54,11 @@ function App() {
             <Route path="/recent-profiles" element={<RecentProfiles />} />
           </Routes>
         </Router>
+
+        <ConnectionModal
+          isOpen={!isOnline && isModalOpen}
+          onClose={() => setIsModalOpen(false)} 
+        />
       </div>
     </div>
   );
